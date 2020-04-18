@@ -17,9 +17,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install through go-wrapper
-      run: GOROOT="" ./gow help
+      env:
+        GOROOT: ""
+      run: ./gow help
     - name: No need to install go
-      run: GOROOT="" ./gow help
+      env:
+        GOROOT: ""
+      run: ./gow help
   no-install-linux:
     runs-on: ubuntu-latest
     steps:
@@ -33,9 +37,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install through go-wrapper
+      env:
+        GOROOT: ""
       run: "gow.cmd help"
       shell: cmd
     - name: No need to install go
+      env:
+        GOROOT: ""
       run: "gow.cmd help"
       shell: cmd
   no-install-windows:
