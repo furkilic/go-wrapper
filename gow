@@ -1,0 +1,234 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+# ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+# GO Start Up Batch script
+#
+#
+# Optional ENV vars
+# -----------------
+#   GOROOT=/app/go - if go already installed locally
+#   GOW_VERBOSE=true - to make it verbose
+#   GOW_REPOURL=https://dl.google.com/go - default REPOURL
+# ----------------------------------------------------------------------------
+
+# OS specific support.  $var _must_ be set to either true or false.
+cygwin=false;
+darwin=false;
+mingw=false
+os="linux";
+arch="amd64";
+extension="tar.gz"
+
+case "`uname`" in
+  CYGWIN*) cygwin=true;os="windows";extension="zip";;
+  MINGW*) mingw=true;os="windows";extension="zip";;
+  Darwin*) darwin=true;os="darwin";;
+esac
+case "`uname -m`" in
+  x86_64) arch="amd64";;
+  x86) arch="386";;
+esac
+
+
+if [ -z "$GOW_REPOURL" ]
+then
+  GOW_REPOURL="https://dl.google.com/go"
+fi
+
+
+# traverses directory structure from process work directory to filesystem root
+# first directory with .go subdirectory is considered project base directory
+find_go_basedir() {
+  if [ -z "$1" ]
+  then
+    echo "Path not specified to find_maven_basedir"
+    return 1
+  fi
+
+  basedir="$1"
+  wdir="$1"
+  while [ "$wdir" != '/' ] ; do
+    if [ -d "$wdir"/.go ] ; then
+      basedir=$wdir
+      break
+    fi
+    # workaround for JBEAP-8937 (on Solaris 10/Sparc)
+    if [ -d "${wdir}" ]; then
+      wdir=`cd "$wdir/.."; pwd`
+    fi
+    # end of workaround
+  done
+  echo "${basedir}"
+}
+
+# concatenates all lines of a file
+concat_lines() {
+  if [ -f "$1" ]; then
+    echo "$(tr -s '\n' ' ' < "$1")"
+  fi
+}
+
+BASE_DIR=`find_go_basedir "$(pwd)"`
+if [ -z "$BASE_DIR" ]; then
+  exit 1;
+fi
+
+##########################################################################################
+# Extension to allow automatically downloading GO
+# This allows using the go-wrapper in projects that prohibit checking in binary data.
+##########################################################################################
+
+goVersionUrl="https://golang.org/doc/devel/release.html"
+goWrapperPath="$BASE_DIR/.go/wrapper"
+goWrapperProperties="$goWrapperPath/go-wrapper.properties"
+goInstallPath="$goWrapperPath/go"
+goTmpPath="$goWrapperPath/tmp"
+goWrapperDate="$goInstallPath/go.date"
+goVersionPath="$goTmpPath/go.version"
+goZipPath="$goTmpPath/go.$extension"
+
+if $cygwin; then
+  goWrapperPath=`cygpath --path --windows "$goWrapperPath"`
+  goWrapperProperties=`cygpath --path --windows "$goWrapperProperties"`
+  goInstallPath=`cygpath --path --windows "$goInstallPath"`
+  goTmpPath=`cygpath --path --windows "$goTmpPath"`
+  goWrapperDate=`cygpath --path --windows "$goWrapperDate"`
+  goVersionPath=`cygpath --path --windows "$goVersionPath"`
+  goZipPath=`cygpath --path --windows "$goZipPath"`
+fi
+
+retrieve_version() {
+  if [ -z "$1" ]
+  then
+    echo "Path not specified to retrieve_version"
+    return 1
+  fi
+  # Bad hack to retrieve the latest version
+  go_version=`cat "$1" | grep "^go.* (released" | awk '{print substr($3,1,10), substr($1,3)}' | sort -r | awk 'NR==1{print $2}'`
+  echo "${go_version}"
+}
+
+unpack_archive(){
+  if [ "$extension" == "zip" ]; then
+    unzip "$goZipPath" -d "$goWrapperPath"
+  else
+    tar -C "$goWrapperPath" -zxvf "$goZipPath"
+  fi
+  rm "$goVersionPath"
+  date > "$goWrapperDate"
+}
+
+get_local_go() {
+    if [ -f "$goWrapperDate" ]; then
+        if [ "$GOW_VERBOSE" = true ]; then
+          echo "Found $goInstallPath"
+        fi
+    elif [ -f "$goZipPath" ]; then
+        if [ "$GOW_VERBOSE" = true ]; then
+          echo "Found $goZipPath"
+          unpack_archive
+        fi
+    else
+        if [ "$GOW_VERBOSE" = true ]; then
+          echo "Couldn't find $goInstallPath, downloading it ..."
+        fi
+        mkdir -p "$goTmpPath"
+        if [ -f "$goWrapperProperties" ]; then
+            while IFS="=" read key value; do
+              case "$key" in (distributionUrl) goUrl="$value"; break ;;
+              esac
+            done < "$goWrapperProperties"
+        fi
+
+        if command -v wget > /dev/null; then
+            if [ "$GOW_VERBOSE" = true ]; then
+              echo "Found wget ... using wget"
+            fi
+            if [ -z "$goUrl" ]; then
+                if [ ! -f "$goVersionPath" ]; then
+                    if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
+                        wget "$goVersionUrl" -O "$goVersionPath"
+                    else
+                        wget --http-user=$GOW_USERNAME --http-password=$GOW_PASSWORD "$goVersionUrl" -O "$goVersionPath"
+                    fi
+                fi
+                go_version=`retrieve_version "$goVersionPath"`
+                goUrl="$GOW_REPOURL/go$go_version.$os-$arch.$extension"
+            fi
+            if [ "$GOW_VERBOSE" = true ]; then
+              echo "Downloading from: $goUrl"
+            fi
+            if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
+                wget "$goUrl" -O "$goZipPath"
+            else
+                wget --http-user=$GOW_USERNAME --http-password=$GOW_PASSWORD "$goUrl" -O "$goZipPath"
+            fi
+            unpack_archive
+        elif command -v curl > /dev/null; then
+            if [ "$GOW_VERBOSE" = true ]; then
+              echo "Found curl ... using curl"
+            fi
+            if [ -z "$goUrl" ]; then
+                if [ ! -f "$goVersionPath" ]; then
+                    if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
+                        curl -o "$goVersionPath" "$goVersionUrl" -f
+                    else
+                        curl --user $GOW_USERNAME:$GOW_PASSWORD -o "$goVersionPath" "$goVersionUrl" -f
+                    fi
+                fi
+                go_version=`retrieve_version "$goVersionPath"`
+                goUrl="$GOW_REPOURL/go$go_version.$os-$arch.$extension"
+            fi
+            if [ "$GOW_VERBOSE" = true ]; then
+              echo "Downloading from: $goUrl"
+            fi
+            if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
+                curl -o "$goZipPath" "$goUrl" -f
+            else
+                curl --user $GOW_USERNAME:$GOW_PASSWORD -o "$goZipPath" "$goUrl" -f
+            fi
+            unpack_archive
+        else
+            echo "TODO: default downloader"
+        fi
+    fi
+}
+##########################################################################################
+# End of extension
+##########################################################################################
+
+if [ -z "$GOROOT" ]; then
+    get_local_go
+    GOROOT="$goInstallPath"
+fi
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin; then
+  [ -n "$GOROOT" ] &&
+    GOROOT=`cygpath --path --windows "$GOROOT"`
+fi
+
+# Provide a "standardized" way to retrieve the CLI args that will
+# work with both Windows and non-Windows executions.
+GO_CMD_LINE_ARGS="$@"
+export GO_CMD_LINE_ARGS
+
+exec "$GOROOT/bin/go" "$@"

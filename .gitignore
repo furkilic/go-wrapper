@@ -13,3 +13,34 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+
+
+### GO WRAPPER OUTPUT ###
+.go/wrapper/go
+.go/wrapper/tmp
