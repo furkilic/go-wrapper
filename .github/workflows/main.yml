@@ -17,9 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install through go-wrapper
-      run: $GITHUB_WORKSPACE/gow help
+      run: GOROOT="" ./gow help
     - name: No need to install go
-      run: $GITHUB_WORKSPACE/gow help
+      run: GOROOT="" ./gow help
   no-install-linux:
     runs-on: ubuntu-latest
     steps:
@@ -27,15 +27,15 @@ jobs:
     - name: Setup Go environment
       uses: actions/setup-go@v2.0.3
     - name: Use installed go
-      run: $GITHUB_WORKSPACE/gow help
+      run: ./gow help
   install-windows:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Install through go-wrapper
-      run: "%GITHUB_WORKSPACE%\\gow.cmd help"
+      run: "gow.cmd help"
     - name: No need to install go
-      run: "%GITHUB_WORKSPACE%\\gow.cmd help"
+      run: "gow.cmd help"
   no-install-windows:
     runs-on: windows-latest
     steps:
@@ -43,4 +43,4 @@ jobs:
     - name: Setup Go environment
       uses: actions/setup-go@v2.0.3
     - name: Use installed go
-      run: "%GITHUB_WORKSPACE%\\gow.cmd help"
+      run: "gow.cmd help"
