@@ -12,20 +12,35 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+  install-linux:
+    runs-on: ubuntu-latest
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: Install through go-wrapper
       run: $GITHUB_WORKSPACE/gow help
     - name: No need to install go
       run: $GITHUB_WORKSPACE/gow help
+  no-install-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: Setup Go environment
       uses: actions/setup-go@v2.0.3
     - name: Use installed go
       run: $GITHUB_WORKSPACE/gow help
+  install-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install through go-wrapper
+      run: "%GITHUB_WORKSPACE%\\gow.cmd help"
+    - name: No need to install go
+      run: "%GITHUB_WORKSPACE%\\gow.cmd help"
+  no-install-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Go environment
+      uses: actions/setup-go@v2.0.3
+    - name: Use installed go
+      run: "%GITHUB_WORKSPACE%\\gow.cmd help"
