@@ -34,8 +34,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install through go-wrapper
       run: "gow.cmd help"
+      shell: cmd
     - name: No need to install go
       run: "gow.cmd help"
+      shell: cmd
   no-install-windows:
     runs-on: windows-latest
     steps:
@@ -44,3 +46,4 @@ jobs:
       uses: actions/setup-go@v2.0.3
     - name: Use installed go
       run: "gow.cmd help"
+      shell: cmd
