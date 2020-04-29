@@ -121,12 +121,12 @@ powershell -Command "&{"^
     "}"
 for /f "tokens=*" %%a in ('findstr /R "toggleVisible" %GO_VERSION_PATH%') do (
     for /f "tokens=3delims==" %%i in ("%%a") do (
-      echo %%j%%i>>%GO_VERSION_PATH%.tmp
+      echo %%i>>%GO_VERSION_PATH%.tmp
     )
 )
 
 set /pGO_LATEST_VERSION=<%GO_VERSION_PATH%.tmp
-set GO_LATEST_VERSION=%GO_LATEST_VERSION:~5,-2%
+set GO_LATEST_VERSION=%GO_LATEST_VERSION:~3,-2%
 
 DEL %GO_VERSION_PATH%.tmp
 DEL %GO_VERSION_PATH%
