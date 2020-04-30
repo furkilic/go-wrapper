@@ -81,7 +81,7 @@ set GO_WRAPPER_PROPERTIES="%GO_PROJECTBASEDIR%\.go\wrapper\go-wrapper.properties
 set GO_INSTALL_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\go"
 set GO_TMP_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp"
 set GO_WRAPPER_DATE="%GO_PROJECTBASEDIR%\.go\wrapper\go\go.date"
-set GO_VERSION_URL="https://golang.org/doc/devel/release.html"
+set GO_VERSION_URL="https://golang.org/dl/"
 set GO_VERSION_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp\go.version"
 set GO_ZIP_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp\go.zip"
 
@@ -119,19 +119,14 @@ powershell -Command "&{"^
     "}"^
     "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $webclient.DownloadFile('%GO_VERSION_URL%', '%GO_VERSION_PATH:~1,-1%')"^
     "}"
-for /f "tokens=*" %%a in ('findstr /R "^go.* (release$" %GO_VERSION_PATH%') do (
-    for /f "tokens=1,3" %%i in ("%%a") do (
-        if not "%%j" == "not" (
-         echo %%j%%i>>%GO_VERSION_PATH%.tmp
-        )
+for /f "tokens=*" %%a in ('findstr /R "toggleVisible" %GO_VERSION_PATH%') do (
+    for /f "tokens=3delims==" %%i in ("%%a") do (
+      echo %%i>>%GO_VERSION_PATH%.tmp
     )
 )
 
-set GO_LATEST_VERSION=
-FOR /f "tokens=1*delims=)" %%a IN (' sort %GO_VERSION_PATH%.tmp ' ) DO  (
-    set GO_LATEST_VERSION=%%b
-)
-set GO_LATEST_VERSION=%GO_LATEST_VERSION:~2%
+set /pGO_LATEST_VERSION=<%GO_VERSION_PATH%.tmp
+set GO_LATEST_VERSION=%GO_LATEST_VERSION:~3,-2%
 
 DEL %GO_VERSION_PATH%.tmp
 DEL %GO_VERSION_PATH%
