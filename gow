@@ -131,7 +131,9 @@ unpack_archive(){
   else
     tar -C "$goWrapperPath" -zxvf "$goZipPath"
   fi
-  rm "$goVersionPath"
+  if [ -f "$goVersionPath" ]; then
+    rm "$goVersionPath"
+  fi
   date > "$goWrapperDate"
 }
 
@@ -151,8 +153,8 @@ get_local_go() {
         fi
         mkdir -p "$goTmpPath"
         if [ -f "$goWrapperProperties" ]; then
-            while IFS="=" read key value; do
-              case "$key" in (distributionUrl) goUrl="$value"; break ;;
+            while IFS="=" read key value  || [ "$key" ]; do
+              case "$key" in (distributionUrl) goUrl=`echo "$value" | sed 's/ *$//g'`; break ;;
               esac
             done < "$goWrapperProperties"
         fi
@@ -188,9 +190,9 @@ get_local_go() {
             if [ -z "$goUrl" ]; then
                 if [ ! -f "$goVersionPath" ]; then
                     if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
-                        curl -o "$goVersionPath" "$goVersionUrl" -f
+                        curl -o "$goVersionPath" "$goVersionUrl" -f -s
                     else
-                        curl --user $GOW_USERNAME:$GOW_PASSWORD -o "$goVersionPath" "$goVersionUrl" -f
+                        curl --user $GOW_USERNAME:$GOW_PASSWORD -o "$goVersionPath" "$goVersionUrl" -f -s
                     fi
                 fi
                 go_version=`retrieve_version "$goVersionPath"`
@@ -219,7 +221,7 @@ if [ -z "$GOROOT" ]; then
     GOROOT="$goInstallPath"
 fi
 
-# For Cygwin, switch paths to Windows format before running java
+# For Cygwin, switch paths to Windows format before running go
 if $cygwin; then
   [ -n "$GOROOT" ] &&
     GOROOT=`cygpath --path --windows "$GOROOT"`
