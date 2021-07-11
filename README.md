@@ -81,6 +81,10 @@ You can change its version by setting the `distributionUrl` in
 ```bash
 distributionUrl=https://dl.google.com/go/go1.13.10.linux-amd64.tar.gz
 ```
+```bash
+distributionUrl=https://dl.google.com/go/go1.13.10.windows-amd64.zip
+```
+> :warning: **Be very careful here to download the correct url for windows and linux** 
 
 ## Using Basic Authentication for Distribution Download
 
@@ -99,3 +103,19 @@ options:
 
 If you already have a local installation and your `GOROOT` environment variable points 
 to it, Go Wrapper will use it.
+
+## FAQ
+
+#### Should i use `gow` or `gow.cmd`
+
+Only on Windows and the `Command Prompt` or `PowerShell` use `./gow.cmd`
+
+For all other options (_Windows with `GitBash` or `Cygwin`, Linux, MacOs.._) use `./gow`
+
+#### Nothing is happening when I put an older `distributionUrl` in `.go/wrapper/go-wrapper.properties`
+
+First of all ensure that  the `distributionUrl` matches the OS your are working on.
+
+Ensure that there is not an already avalaible `GOROOT` in your Environment Variables
+
+In case there is a previous Installation with `gow`, manually delete `.go/wrapper/tmp` and `.go/wrapper/go`

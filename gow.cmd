@@ -77,8 +77,8 @@ cd "%EXEC_DIR%"
 :endDetectBaseDir
 
 set GO_WRAPPER_PATH="%GO_PROJECTBASEDIR%\.go\wrapper"
-set GO_WRAPPER_PROPERTIES="%GO_PROJECTBASEDIR%\.go\wrapper\go-wrapper.properties"
-set GO_INSTALL_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\go"
+set GO_WRAPPER_PROPERTIES=%GO_PROJECTBASEDIR%\.go\wrapper\go-wrapper.properties
+set GO_INSTALL_PATH=%GO_PROJECTBASEDIR%\.go\wrapper\go
 set GO_TMP_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp"
 set GO_WRAPPER_DATE="%GO_PROJECTBASEDIR%\.go\wrapper\go\go.date"
 set GO_VERSION_URL="https://golang.org/dl/"

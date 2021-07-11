@@ -19,11 +19,27 @@ jobs:
     - name: Install through go-wrapper
       env:
         GOROOT: ""
-      run: ./gow help
+      run: ./gow version
     - name: No need to install go
       env:
         GOROOT: ""
       run: ./gow help
+  install-old-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add old version in go-wrapper.properties
+        env:
+          GOROOT: ""
+        run: echo distributionUrl=https://dl.google.com/go/go1.13.10.linux-amd64.tar.gz > .go/wrapper/go-wrapper.properties
+      - name: Install through go-wrapper
+        env:
+          GOROOT: ""
+        run: ./gow version
+      - name: No need to install go
+        env:
+          GOROOT: ""
+        run: ./gow help
   no-install-linux:
     runs-on: ubuntu-latest
     steps:
@@ -39,13 +55,31 @@ jobs:
     - name: Install through go-wrapper
       env:
         GOROOT: ""
-      run: "gow.cmd help"
+      run: "gow.cmd version"
       shell: cmd
     - name: No need to install go
       env:
         GOROOT: ""
       run: "gow.cmd help"
       shell: cmd
+  install-old-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add old version in go-wrapper.properties
+        env:
+          GOROOT: ""
+        run: echo distributionUrl=https://dl.google.com/go/go1.13.10.windows-amd64.zip > .go/wrapper/go-wrapper.properties
+      - name: Install through go-wrapper
+        env:
+          GOROOT: ""
+        run: "gow.cmd version"
+        shell: cmd
+      - name: No need to install go
+        env:
+          GOROOT: ""
+        run: "gow.cmd help"
+        shell: cmd
   no-install-windows:
     runs-on: windows-latest
     steps:
