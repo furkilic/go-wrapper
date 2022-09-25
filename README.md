@@ -119,3 +119,40 @@ First of all ensure that  the `distributionUrl` matches the OS your are working 
 Ensure that there is not an already avalaible `GOROOT` in your Environment Variables
 
 In case there is a previous Installation with `gow`, manually delete `.go/wrapper/tmp` and `.go/wrapper/go`
+
+#### Can I use `go` helpers like `cobra-cli`?
+
+In order to use a go helper like cobra-cli follow the install instructions adapted to use the wrapper:
+* linux/mac:
+    ```bash
+    ./gow install github.com/spf13/cobra-cli@latest
+    ```
+* windows:
+    ```bash
+    .\gow.cmd install github.com/spf13/cobra-cli@latest
+    ```
+Once installed you can create a helper wrapper script using the following templates, changing the value of `cobra-cli` to suite your needs:
+* linux/mac, let's say the wrapper is called `cobra-cliw`:
+    ```bash
+    #!/bin/sh
+    GOCMD=cobra-cli ./gow "$@"
+    ```
+    Make it executable using `chmod +x cobra-cliw`.
+
+    You can now invoke cobra-cli like:
+    ```bash
+    ./cobra-cliw add [command]
+    ```
+* windows, let's say the wrapper is called `cobra-cliw.cmd`:
+    ```bash
+    @REM Begin all REM lines with '@' in case GO_BATCH_ECHO is 'on'
+    @echo off
+    @setlocal
+    SET GOCMD=cobra-cli
+    .\gow.cmd %*
+    ```
+
+    You can now invoke cobra-cli like:
+    ```bash
+    .\cobra-cliw.cmd add [command]
+    ```

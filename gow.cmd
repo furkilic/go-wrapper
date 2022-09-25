@@ -166,6 +166,8 @@ if "%GOW_VERBOSE%" == "true" (
 )
 
 set GOROOT=%GO_INSTALL_PATH%
+set GOBIN=%GOROOT%\bin
+
 @REM End of extension
 
 @REM Provide a "standardized" way to retrieve the CLI args that will
@@ -173,7 +175,10 @@ set GOROOT=%GO_INSTALL_PATH%
 :run
 set GO_CMD_LINE_ARGS=%*
 
-%GOROOT%\bin\go %*
+IF NOT DEFINED GOCMD SET GOCMD=go
+set PATH=%PATH%;%GOROOT%\bin
+
+%GOROOT%\bin\%GOCMD% %*
 if ERRORLEVEL 1 goto error
 goto end
 

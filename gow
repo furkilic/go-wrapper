@@ -227,9 +227,13 @@ if $cygwin; then
     GOROOT=`cygpath --path --windows "$GOROOT"`
 fi
 
+export GOBIN="$GOROOT/bin"
+
 # Provide a "standardized" way to retrieve the CLI args that will
 # work with both Windows and non-Windows executions.
 GO_CMD_LINE_ARGS="$@"
 export GO_CMD_LINE_ARGS
 
-exec "$GOROOT/bin/go" "$@"
+GOCMD=${GOCMD:-go}
+
+exec "$GOROOT/bin/$GOCMD" "$@"
