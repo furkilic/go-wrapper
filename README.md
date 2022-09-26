@@ -119,3 +119,28 @@ First of all ensure that  the `distributionUrl` matches the OS your are working 
 Ensure that there is not an already avalaible `GOROOT` in your Environment Variables
 
 In case there is a previous Installation with `gow`, manually delete `.go/wrapper/tmp` and `.go/wrapper/go`
+
+#### Set-Up your environment to use `go`
+
+Similar to `docker-machine env` you can set-up your shell to use directly `go` with the configured Environment Variables.
+For that purpose you can use `./gow printenv`
+
+On Windows
+```cmd
+gow printenv
+set GOROOT=C:\Users\elonmusk\go-wrapper\.go\wrapper\go
+set GOPATH=C:\Users\elonmusk\go-wrapper\.go\wrapper\custom-gopath
+set PATH=%GOROOT%\bin;%GOPATH%\bin;%PATH%
+
+# Run this command to configure your shell: copy and paste the above values into your command prompt
+```
+Else
+```bash 
+$ ./gow printenv
+export GOROOT="/home/elonmusk/go-wrapper/.go/wrapper/go"
+export GOPATH="/home/elonmusk/go-wrapper/.go/wrapper/custom-gopath"
+export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
+
+# Run this command to configure your shell:
+# eval "$(./gow printenv)"
+```

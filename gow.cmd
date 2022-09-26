@@ -81,7 +81,7 @@ set GO_WRAPPER_PROPERTIES=%GO_PROJECTBASEDIR%\.go\wrapper\go-wrapper.properties
 set GO_INSTALL_PATH=%GO_PROJECTBASEDIR%\.go\wrapper\go
 set GO_TMP_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp"
 set GO_WRAPPER_DATE="%GO_PROJECTBASEDIR%\.go\wrapper\go\go.date"
-set GO_VERSION_URL="https://golang.org/dl/"
+set GO_VERSION_URL="https://go.dev/dl/"
 set GO_VERSION_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp\go.version"
 set GO_ZIP_PATH="%GO_PROJECTBASEDIR%\.go\wrapper\tmp\go.zip"
 
@@ -166,6 +166,11 @@ if "%GOW_VERBOSE%" == "true" (
 )
 
 set GOROOT=%GO_INSTALL_PATH%
+
+@REM Set GOPATH in case there is none 
+if "%GOPATH%" == "" (
+    for /f %%i in ('%GOROOT%\bin\go env GOPATH') do set GOPATH=%%i
+)
 @REM End of extension
 
 @REM Provide a "standardized" way to retrieve the CLI args that will
@@ -173,7 +178,19 @@ set GOROOT=%GO_INSTALL_PATH%
 :run
 set GO_CMD_LINE_ARGS=%*
 
-%GOROOT%\bin\go %*
+@REM Export Go Variables for downstream executions
+set "PATH=%GOROOT%\bin;%GOPATH%\bin;%PATH%"
+
+if "%1" == "printenv" (
+    echo set GOROOT=%GOROOT%
+    echo set GOPATH=%GOPATH%
+    echo set PATH=%%GOROOT%%\bin;%%GOPATH%%\bin;%%PATH%%
+    echo:
+    echo # Run this command to configure your shell: copy and paste the above values into your command prompt
+) else (
+    %GOROOT%\bin\go %*
+)
+
 if ERRORLEVEL 1 goto error
 goto end
 
