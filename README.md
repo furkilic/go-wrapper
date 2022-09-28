@@ -75,7 +75,16 @@ By default it is off.
 
 ## Using a Different Version of Go
 
-You can change its version by setting the `distributionUrl` in
+You can change the version by setting the `goVersion` in
+`.go/wrapper/go-wrapper.properties`, e.g.
+
+```bash
+goVersion=1.15.1
+```
+
+## Using a Specific Distribution
+
+You can set the distribution by setting the `distributionUrl` in
 `.go/wrapper/go-wrapper.properties`, e.g.
 
 ```bash

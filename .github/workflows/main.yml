@@ -28,7 +28,7 @@ jobs:
       env:
         GOROOT: ""
       run: ./gow printenv
-  install-old-linux:
+  install-distribution-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,6 +36,26 @@ jobs:
         env:
           GOROOT: ""
         run: echo distributionUrl=https://dl.google.com/go/go1.13.10.linux-amd64.tar.gz > .go/wrapper/go-wrapper.properties
+      - name: Install through go-wrapper
+        env:
+          GOROOT: ""
+        run: ./gow version
+      - name: No need to install go
+        env:
+          GOROOT: ""
+        run: ./gow help
+      - name: Set-up Environment
+        env:
+          GOROOT: ""
+        run: ./gow printenv  
+  install-version-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add old version in go-wrapper.properties
+        env:
+          GOROOT: ""
+        run: echo goVersion=1.15.1 > .go/wrapper/go-wrapper.properties
       - name: Install through go-wrapper
         env:
           GOROOT: ""
@@ -77,7 +97,7 @@ jobs:
         GOROOT: ""
       run: "gow.cmd printenv"
       shell: cmd
-  install-old-windows:
+  install-distribution-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -85,6 +105,29 @@ jobs:
         env:
           GOROOT: ""
         run: echo distributionUrl=https://dl.google.com/go/go1.13.10.windows-amd64.zip > .go/wrapper/go-wrapper.properties
+      - name: Install through go-wrapper
+        env:
+          GOROOT: ""
+        run: "gow.cmd version"
+        shell: cmd
+      - name: No need to install go
+        env:
+          GOROOT: ""
+        run: "gow.cmd help"
+        shell: cmd
+      - name: Set-up Environment
+        env:
+          GOROOT: ""
+        run: "gow.cmd printenv"
+        shell: cmd
+  install-version-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add old version in go-wrapper.properties
+        env:
+          GOROOT: ""
+        run: echo goVersion=1.15.1 > .go/wrapper/go-wrapper.properties
       - name: Install through go-wrapper
         env:
           GOROOT: ""
