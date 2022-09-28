@@ -1,0 +1,20 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: tar -czf go-wrapper.tar.gz gow gow.cmd .go
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: go-wrapper.tar.gz
+          draft: true
