@@ -155,6 +155,7 @@ get_local_go() {
         if [ -f "$goWrapperProperties" ]; then
             while IFS="=" read key value  || [ "$key" ]; do
               case "$key" in (distributionUrl) goUrl=`echo "$value" | sed 's/ *$//g'`; break ;;
+                             (goVersion) go_version=$value; break ;;
               esac
             done < "$goWrapperProperties"
         fi
@@ -164,6 +165,7 @@ get_local_go() {
               echo "Found wget ... using wget"
             fi
             if [ -z "$goUrl" ]; then
+              if [ -z "$go_version" ]; then
                 if [ ! -f "$goVersionPath" ]; then
                     if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
                         wget "$goVersionUrl" -O "$goVersionPath"
@@ -172,7 +174,8 @@ get_local_go() {
                     fi
                 fi
                 go_version=`retrieve_version "$goVersionPath"`
-                goUrl="$GOW_REPOURL/go$go_version.$os-$arch.$extension"
+              fi
+              goUrl="$GOW_REPOURL/go$go_version.$os-$arch.$extension"
             fi
             if [ "$GOW_VERBOSE" = true ]; then
               echo "Downloading from: $goUrl"
@@ -188,6 +191,7 @@ get_local_go() {
               echo "Found curl ... using curl"
             fi
             if [ -z "$goUrl" ]; then
+              if [ -z "$go_version" ]; then
                 if [ ! -f "$goVersionPath" ]; then
                     if [ -z "$GOW_USERNAME" ] || [ -z "$GOW_PASSWORD" ]; then
                         curl -o "$goVersionPath" "$goVersionUrl" -f -s
@@ -196,7 +200,8 @@ get_local_go() {
                     fi
                 fi
                 go_version=`retrieve_version "$goVersionPath"`
-                goUrl="$GOW_REPOURL/go$go_version.$os-$arch.$extension"
+              fi
+              goUrl="$GOW_REPOURL/go$go_version.$os-$arch.$extension"
             fi
             if [ "$GOW_VERBOSE" = true ]; then
               echo "Downloading from: $goUrl"

@@ -91,6 +91,7 @@ set DOWNLOAD_URL=%DOWNLOAD_URL%
 if not exist "%GO_WRAPPER_PROPERTIES%" goto extension
 FOR /F "tokens=1,2 delims==" %%A IN (%GO_WRAPPER_PROPERTIES%) DO (
     IF "%%A"=="distributionUrl" SET DOWNLOAD_URL=%%B
+    IF "%%A"=="goVersion" SET GO_LATEST_VERSION=%%B
 )
 
 @REM Extension to allow automatically downloading GO
@@ -109,6 +110,7 @@ if "%GOW_VERBOSE%" == "true" (
 
 if exist %GO_ZIP_PATH% goto goZipDownloaded
 if not "%DOWNLOAD_URL%" == "" goto goZipDownloadUrlReady
+if not "%GO_LATEST_VERSION%" == "" goto buildDownloadUrl
 
 @REM BAD Hack to retrieve latest version
 
@@ -131,7 +133,7 @@ set GO_LATEST_VERSION=%GO_LATEST_VERSION:~3,-2%
 DEL %GO_VERSION_PATH%.tmp
 DEL %GO_VERSION_PATH%
 
-
+:buildDownloadUrl
 set GO_DOWNLOAD_ARCH=amd64
 echo %PROCESSOR_ARCHITECTURE% | find /i "x86" > nul
 if %ERRORLEVEL%==0 set GO_DOWNLOAD_ARCH=386
