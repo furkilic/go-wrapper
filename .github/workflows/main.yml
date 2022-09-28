@@ -24,6 +24,10 @@ jobs:
       env:
         GOROOT: ""
       run: ./gow help
+    - name: Set-up Environment
+      env:
+        GOROOT: ""
+      run: ./gow printenv
   install-old-linux:
     runs-on: ubuntu-latest
     steps:
@@ -40,6 +44,10 @@ jobs:
         env:
           GOROOT: ""
         run: ./gow help
+      - name: Set-up Environment
+        env:
+          GOROOT: ""
+        run: ./gow printenv
   no-install-linux:
     runs-on: ubuntu-latest
     steps:
@@ -48,6 +56,8 @@ jobs:
       uses: actions/setup-go@v2.0.3
     - name: Use installed go
       run: ./gow help
+    - name: Set-up Environment
+      run: ./gow printenv
   install-windows:
     runs-on: windows-latest
     steps:
@@ -61,6 +71,11 @@ jobs:
       env:
         GOROOT: ""
       run: "gow.cmd help"
+      shell: cmd
+    - name: Set-up Environment
+      env:
+        GOROOT: ""
+      run: "gow.cmd printenv"
       shell: cmd
   install-old-windows:
     runs-on: windows-latest
@@ -80,6 +95,11 @@ jobs:
           GOROOT: ""
         run: "gow.cmd help"
         shell: cmd
+      - name: Set-up Environment
+        env:
+          GOROOT: ""
+        run: "gow.cmd printenv"
+        shell: cmd
   no-install-windows:
     runs-on: windows-latest
     steps:
@@ -88,4 +108,7 @@ jobs:
       uses: actions/setup-go@v2.0.3
     - name: Use installed go
       run: "gow.cmd help"
+      shell: cmd
+    - name: Set-up Environment
+      run: "gow.cmd printenv"
       shell: cmd

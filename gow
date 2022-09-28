@@ -96,7 +96,7 @@ fi
 # This allows using the go-wrapper in projects that prohibit checking in binary data.
 ##########################################################################################
 
-goVersionUrl="https://golang.org/dl/"
+goVersionUrl="https://go.dev/dl/"
 goWrapperPath="$BASE_DIR/.go/wrapper"
 goWrapperProperties="$goWrapperPath/go-wrapper.properties"
 goInstallPath="$goWrapperPath/go"
@@ -221,10 +221,17 @@ if [ -z "$GOROOT" ]; then
     GOROOT="$goInstallPath"
 fi
 
+# Set GOPATH in case there is none 
+if [ -z "$GOPATH" ]; then
+    GOPATH=`$GOROOT/bin/go env GOPATH`
+fi
+
 # For Cygwin, switch paths to Windows format before running go
 if $cygwin; then
   [ -n "$GOROOT" ] &&
     GOROOT=`cygpath --path --windows "$GOROOT"`
+  [ -n "$GOPATH" ] &&
+    GOPATH=`cygpath --path --windows "$GOPATH"`
 fi
 
 # Provide a "standardized" way to retrieve the CLI args that will
@@ -232,4 +239,18 @@ fi
 GO_CMD_LINE_ARGS="$@"
 export GO_CMD_LINE_ARGS
 
-exec "$GOROOT/bin/go" "$@"
+# Export Go Variables for downstream executions
+export GOROOT
+export GOPATH
+export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
+
+if [ "$1" = "printenv" ]; then 
+  echo "export GOROOT=\"$GOROOT\""
+  echo "export GOPATH=\"$GOPATH\""
+  echo "export PATH=\"\$GOROOT/bin:\$GOPATH/bin:\$PATH\""
+  echo ''
+  echo '# Run this command to configure your shell:'
+  echo '# eval "$(./gow printenv)"'
+else
+  exec "$GOROOT/bin/go" "$@"
+fi
