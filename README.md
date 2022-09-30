@@ -41,6 +41,15 @@ first, installed and then used.
 Subsequent uses of `gow`/`gow.cmd` use the previously downloaded, specific
 version as needed.
 
+## Installation
+
+One-line installation in your project directory
+
+```bash
+curl -L0 https://github.com/furkilic/go-wrapper/releases/latest/download/go-wrapper.tar.gz | tar -xvz -f -
+```
+> _For PowerShell_ you'll need to encapsulate the one-line between `cmd /c "..."` 
+
 ## Supported Systems
 
 The wrapper should work on various operating systems including
